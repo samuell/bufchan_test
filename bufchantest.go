@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"runtime"
 )
@@ -13,28 +12,25 @@ const (
 	NUMTHREADS = 1
 )
 
-func ReadInput(fileName string, outChan chan []byte) {
+func ReadInput(fileName string, ch chan []byte) {
 	go func() {
 		file, err := os.Open(fileName)
-		if err != nil {
-			log.Fatal(err)
-		} else {
+		if err == nil {
 			scan := bufio.NewScanner(file)
 			for scan.Scan() {
-				outChan <- scan.Bytes()
+				ch <- scan.Bytes()
 			}
-			close(outChan)
+			close(ch)
+			file.Close()
 		}
-		file.Close()
 	}()
 }
 
 func main() {
 	runtime.GOMAXPROCS(NUMTHREADS)
-
-	fileReaderChan := make(chan []byte, BUFSIZE)
-	ReadInput("input.txt", fileReaderChan)
-	for line := range fileReaderChan {
+	ch := make(chan []byte, BUFSIZE)
+	ReadInput("input.txt", ch)
+	for line := range ch {
 		fmt.Println(string(line))
 	}
 }
