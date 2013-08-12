@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	BUFSIZE    = 1
+	BUFSIZE    = 0
 	NUMTHREADS = 1
 )
 
